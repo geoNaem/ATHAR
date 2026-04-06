@@ -1,0 +1,149 @@
+/* Athar Redemption - Design System Foundation */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=JetBrains+Mono:wght@400;500&family=Noto+Naskh+Arabic:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+:root {
+  /* Palette & Identity */
+  --sienna: #C84B31;
+  --bone: #F5EDD9;
+  --near-black: #2C1503;
+  --accent: #E8A87C;
+  --pure-white: #FFFFFF;
+  
+  /* Typography Scale */
+  --h1: clamp(3rem, 5.5vw, 5.5rem);
+  --h2: clamp(2rem, 3.5vw, 3rem);
+  --h3: clamp(1.2rem, 2vw, 1.5rem);
+  --body: clamp(1rem, 1.5vw, 1.15rem);
+  
+  /* Radii */
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+  
+  /* Transition timings */
+  --transit-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  background-color: var(--bone);
+  color: var(--near-black);
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Global Noise Overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.05;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Typography Hierarchy */
+h1, h2, .font-serif {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+h1 { font-size: var(--h1); }
+h2 { font-size: var(--h2); }
+h3 { font-size: var(--h3); font-weight: 600; }
+
+.text-sienna { color: var(--sienna); }
+.text-bone { color: var(--bone); }
+.text-accent { color: var(--accent); }
+
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; letter-spacing: 0.05em; }
+.label { font-family: 'DM Sans', sans-serif; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.75rem; }
+
+/* Arabic Support */
+[lang="ar"] {
+  font-family: 'Noto Naskh Arabic', serif;
+  direction: rtl;
+}
+
+/* UTILITIES */
+.section-padding {
+  padding: 100px 24px;
+}
+
+@media (min-width: 1120px) {
+  .section-padding {
+    padding: 120px 0;
+  }
+}
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.bg-dark { background-color: var(--near-black); color: var(--bone); }
+.bg-bone { background-color: var(--bone); color: var(--near-black); }
+.bg-white { background-color: var(--pure-white); color: var(--near-black); }
+
+/* Animation Classes */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 600ms var(--transit-smooth), transform 600ms var(--transit-smooth);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Button Foundation */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 32px;
+  border-radius: 4px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s var(--transit-smooth), background-color 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn:hover {
+  transform: scale(1.03) translateY(-1px);
+}
+
+.btn-primary {
+  background-color: var(--sienna);
+  color: var(--pure-white);
+}
+
+.btn-secondary {
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  background: transparent;
+}
+
+.btn-dark {
+  background-color: var(--near-black);
+  color: var(--bone);
+}

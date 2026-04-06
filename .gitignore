@@ -1,0 +1,22 @@
+# Next.js
+.next/
+out/
+build/
+.env*.local
+*.tsbuildinfo
+next-env.d.ts
+
+# Production
+dist
+dist-test/
+
+# Coverage
+coverage/
+
+# OS/Logs
+.DS_Store
+*.log
+logs/
+node_modules/
+.vscode/
+.idea/

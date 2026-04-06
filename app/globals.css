@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=JetBrains+Mono:wght@400;500&family=Noto+Naskh+Arabic:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+
+:root {
+  --color-primary: #C84B31;
+  --color-bg: #F5EDD9;
+  --color-dark: #2C1503;
+  --color-accent: #E8A87C;
+  --color-white: #FFFFFF;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-arabic: 'Noto Naskh Arabic', 'Traditional Arabic', serif;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --transition: 150ms ease-out;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-dark);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.mono { font-family: var(--font-mono); }
+.arabic { font-family: var(--font-arabic); }
+
+/* Sticky Progress Bar for Analyze Page */
+.analyze-step {
+  height: 4px;
+  flex: 1;
+  transition: background-color var(--transition);
+}
+
+.analyze-step.active {
+  background-color: var(--color-primary);
+}
+
+.analyze-step.pending {
+  background-color: var(--color-accent);
+  opacity: 0.2;
+}
+
+.analyze-step.complete {
+  background-color: var(--color-primary);
+}
+
+/* Sidebar nav styles */
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: all var(--transition);
+}
+
+.sidebar-link.active {
+  color: var(--color-bg);
+  background: rgba(200, 75, 49, 0.1);
+  border-left-color: var(--color-primary);
+}
+
+.sidebar-link:hover {
+  color: var(--color-bg);
+}

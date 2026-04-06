@@ -1,0 +1,200 @@
+.uploadContainer {
+  font-family: 'DM Sans', sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.dropZone {
+  border: 2px dashed oklch(32% 0.08 195);
+  border-radius: 1.5rem;
+  padding: 3rem 2rem;
+  text-align: center;
+  transition: all 200ms ease-out;
+  background-color: transparent;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.dropZoneActive {
+  background-color: oklch(92% 0.04 80);
+  border-color: oklch(72% 0.18 65);
+  transform: scale(1.02);
+}
+
+.dropZoneSuccess {
+  border: 2px solid oklch(32% 0.08 195);
+  background-color: oklch(97% 0.01 195);
+}
+
+.dropZoneError {
+  border: 2px solid #e63b2e; /* Red for error */
+  background-color: #fef2f2;
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 1rem;
+  color: oklch(32% 0.08 195);
+  transition: all 200ms ease-out;
+}
+
+.dropZoneActive .icon {
+  color: oklch(72% 0.18 65);
+  transform: translateY(-5px);
+}
+
+.title {
+  color: oklch(22% 0.03 250);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: oklch(55% 0.03 220);
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.fileInput {
+  display: none;
+}
+
+.browseButton {
+  background-color: oklch(32% 0.08 195);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+}
+
+.browseButton:hover {
+  background-color: oklch(22% 0.03 250);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Success layout */
+.successHead {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: oklch(32% 0.08 195);
+  font-weight: 700;
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+}
+
+.filename {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+  color: oklch(22% 0.03 250);
+  background-color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  display: inline-block;
+  margin-bottom: 1rem;
+  border: 1px solid oklch(88% 0.02 200);
+}
+
+.statsRow {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background-color: oklch(92% 0.04 80);
+  color: oklch(32% 0.08 195);
+}
+
+.badgeLang {
+  background-color: oklch(72% 0.18 65);
+  color: oklch(22% 0.03 250);
+}
+
+.secureMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: oklch(55% 0.03 220);
+  margin-top: 1rem;
+}
+
+/* Error layout */
+.errorText {
+  color: #e63b2e;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.retryButton {
+  background-color: transparent;
+  color: oklch(22% 0.03 250);
+  border: 1px solid oklch(88% 0.02 200);
+  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 200ms ease-out;
+}
+
+.retryButton:hover {
+  background-color: white;
+}
+
+/* ── Zero-Retention Trust Indicator ────────────────────────────── */
+.trustIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 999px;
+  background-color: rgba(13, 148, 136, 0.08);
+  border: 1px solid rgba(13, 148, 136, 0.25);
+  color: #0d9488;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  animation: trustFadeInOut 4s ease-in-out forwards;
+}
+
+.trustIndicator svg {
+  flex-shrink: 0;
+  color: #0d9488;
+}
+
+@keyframes trustFadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  8% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}

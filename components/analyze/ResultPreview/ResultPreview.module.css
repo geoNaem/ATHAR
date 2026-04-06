@@ -1,0 +1,139 @@
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.stickySummary {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--color-bg);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-accent);
+}
+
+.tabBar {
+  display: flex;
+  background: var(--color-dark);
+  margin-top: 24px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.tab {
+  flex: 1;
+  padding: 16px;
+  text-align: center;
+  color: var(--color-accent);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition);
+}
+
+.tab.active {
+  color: var(--color-bg);
+  border-bottom-color: var(--color-primary);
+}
+
+.section {
+  padding: 40px 0;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ThemeCard specific styles */
+.themeCard {
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  margin-bottom: 20px;
+  overflow: hidden;
+  background: var(--color-white);
+}
+
+.themeHeader {
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background: var(--color-white);
+  transition: background-color 0.2s;
+}
+
+.themeHeader:hover {
+  background-color: var(--color-bg);
+}
+
+.themeBody {
+  padding: 24px;
+  border-top: 1px solid rgba(232, 168, 124, 0.2);
+  background: var(--color-bg);
+}
+
+/* Logframe Table styles */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.table th {
+  background: var(--color-dark);
+  color: var(--color-bg);
+  padding: 16px;
+  text-align: left;
+  font-family: var(--font-body);
+  font-weight: 700;
+}
+
+.table td {
+  padding: 16px;
+  border-bottom: 1px solid rgba(232, 168, 124, 0.2);
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+/* Findings specific styles */
+.findingNumber {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 32px;
+  color: var(--color-primary);
+  opacity: 0.8;
+  margin-right: 20px;
+}
+
+.stickyExport {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-white);
+  padding: 24px;
+  border-top: 4px solid var(--color-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 50;
+  box-shadow: 0 -10px 40px rgba(44, 21, 3, 0.1);
+}

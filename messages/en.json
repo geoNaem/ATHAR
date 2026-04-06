@@ -1,0 +1,141 @@
+{
+  "Common": {
+    "request_access": "Request Access",
+    "see_how_it_works": "See how it works",
+    "en": "EN",
+    "ar": "عر",
+    "system_operational": "SYSTEM OPERATIONAL"
+  },
+  "Navbar": {
+    "how_it_works": "How it works",
+    "methodology": "Methodology",
+    "about": "About",
+    "contact": "Contact",
+    "tagline": "Built by a MEAL practitioner, for MEAL practitioners."
+  },
+  "Hero": {
+    "badge": "MEAL Intelligence Platform",
+    "h1": "Your qualitative analysis, done in minutes.",
+    "sub": "Athar transforms SSI and FGD transcripts into structured, donor-ready MEAL analysis — Word reports, Excel matrices, and visual summaries. Built for the field.",
+    "trust1": "Zero data retention",
+    "trust2": "5 MEAL methodologies",
+    "trust3": "EN / AR bilingual"
+  },
+  "Problem": {
+    "label": "THE REALITY OF QUALITATIVE WORK",
+    "h2": "47 pages of transcripts. A report due Friday. And no time to code.",
+    "sub": "MEAL professionals spend days doing what should take hours. Reading transcripts repeatedly to find themes. Building coding matrices in Excel column by column. Writing narrative analysis under deadline pressure. Athar was built to change that.",
+    "cards": {
+      "1": {
+        "label": "READING & CODING",
+        "title": "Reading the same transcript 4 times",
+        "body": "Manual theme extraction from 50+ page documents takes days. Inconsistency grows with fatigue."
+      },
+      "2": {
+        "label": "MATRIX BUILDING",
+        "title": "Infinite Excel columns, fading focus",
+        "body": "Hand-coding qualitative data into matrices is meticulous, time-consuming, and error-prone."
+      },
+      "3": {
+        "label": "NARRATIVE WRITING",
+        "title": "Writing the analysis at midnight",
+        "body": "Synthesizing findings into donor-ready prose under report deadlines is where quality suffers most."
+      }
+    }
+  },
+  "Workflow": {
+    "label": "THE ATHAR WORKFLOW",
+    "h2": "Three steps. One lunch break.",
+    "steps": {
+      "1": {
+        "title": "Upload your transcripts",
+        "body": "Drag and drop DOCX transcripts or Excel response sheets. Athar reads SSIs, FGDs, and coded response data in both English and Arabic.",
+        "chips": ".docx · .xlsx · EN · AR"
+      },
+      "2": {
+        "title": "Choose your methodology",
+        "body": "Select from 5 MEAL-validated qualitative methods, set your sector, and optionally paste your logframe indicators. Athar aligns emergent themes to your actual project indicators.",
+        "chips": "Thematic · Framework · Grounded · Content · Auto"
+      },
+      "3": {
+        "title": "Download your analysis",
+        "body": "Receive a structured Word report, a coded Excel matrix with frequency data, or a print-ready visual infographic — in minutes, not days.",
+        "chips": ".docx · .xlsx · .pdf"
+      }
+    }
+  },
+  "Methodology": {
+    "label": "METHODOLOGY",
+    "h2": "You choose the method. Athar speaks the language.",
+    "sub": "Every methodology grounded in MEAL DPro standards and peer-reviewed qualitative research frameworks.",
+    "cards": {
+      "1": { "label": "WORD REPORT", "title": "Thematic Analysis (Braun & Clarke)", "body": "Identifies patterns of meaning across transcripts through inductive coding. The global standard for MEAL qualitative work." },
+      "2": { "label": "EXCEL MATRIX", "title": "Framework Analysis", "body": "Deductive matrix approach — ideal when you have logframe indicators to map findings against. Used extensively in policy-driven evaluations." },
+      "3": { "label": "CODING TREE", "title": "Grounded Theory Coding", "body": "Open, axial, and selective coding pipeline. Builds theory from the data up — for exploratory research without predefined categories." },
+      "4": { "label": "FREQUENCY TABLE", "title": "Content Analysis", "body": "Counts, categorizes, and quantifies — gives you frequency data and pattern breakdowns for structured response data." },
+      "5": { "label": "MIXED FORMAT", "title": "Auto-detect", "body": "Athar evaluates your transcript structure and selects the most appropriate methodology automatically.", "badge": "Not sure? Start here" }
+    }
+  },
+  "Output": {
+    "label": "WHAT YOU GET",
+    "h2": "Analysis you can submit to donors.",
+    "sub": "Three output formats. All donor-ready. All generated from the same analysis run.",
+    "cards": {
+      "1": {
+        "title": "Word Report",
+        "body": "Full narrative analysis with executive summary, themes by section, supporting quotes, recommendations, and a methodology note. Ready to submit.",
+        "features": ["Thematic narrative by section", "Donor-aligned presets (GIZ, USAID, EU)", "Logframe alignment table", "Supporting quotes formatted as blockquotes"],
+        "format": ".docx"
+      },
+      "2": {
+        "title": "Excel Coding Matrix",
+        "body": "Structured coding table with theme frequency data, evidence strength ratings, and logframe alignment — ready for further analysis or auditing.",
+        "features": ["4-sheet workbook (matrix, freq, logframe, meta)", "Frequency bar visualization built in", "Evidence strength color-coded", "Arabic RTL sheet option"],
+        "format": ".xlsx",
+        "badge": "RECOMMENDED"
+      },
+      "3": {
+        "title": "Visual Summary",
+        "body": "One-page PDF infographic with top themes chart, key findings callouts, and a pull quote — print-ready A4 for presentations and reports.",
+        "features": ["A4 print-optimized PDF", "Top 5 themes horizontal bar chart", "4 key findings callouts", "Athar-branded, donor-neutral"],
+        "format": ".pdf"
+      }
+    }
+  },
+  "Privacy": {
+    "label": "DATA PROTECTION",
+    "h2": "Built for protection data. Not around it.",
+    "quote": "Your beneficiaries' stories never leave your hands.",
+    "columns": {
+      "1": { "title": "Zero retention", "body": "Files are uploaded, processed entirely in memory, and deleted immediately. No file is ever written to disk or stored in any database. This is architecture, not policy." },
+      "2": { "title": "No AI training", "body": "Your transcripts, beneficiary quotes, and project data never improve any AI model. Your data is used once, for your analysis, then gone." },
+      "3": { "title": "Institutional-ready", "body": "Data Processing Agreements (DPA) available for NGOs and INGOs. GDPR-aligned architecture. Designed for organizations handling sensitive and protection-classified data." }
+    },
+    "verification": "FILES PROCESSED IN MEMORY · DELETED IMMEDIATELY · VERIFIED"
+  },
+  "SocialProof": {
+    "quote": "Athar cut our quarterly reporting time by four entire days. Running thematic extraction across Arabic FGDs in minutes without compromising data security is unheard of in this sector.",
+    "attrib": "Sarah M.",
+    "role": "MEAL Manager, IRC Jordan",
+    "prev": "Previously used: Excel + NVivo"
+  },
+  "Field": {
+    "label": "DESIGNED FOR REAL MEAL WORK",
+    "h2": "What makes Athar different.",
+    "features": {
+      "1": { "title": "English + Arabic, natively", "body": "Upload Arabic FGD transcripts. Receive Arabic Word reports with RTL formatting. No translation layer — Athar analyzes Arabic as a first-class language." },
+      "2": { "title": "Aligned to your logframe", "body": "Paste your logframe indicators before analysis. Athar maps emergent themes to your actual project indicators — making findings directly reportable." },
+      "3": { "title": "Donor format presets", "body": "One-click formatting presets apply the correct terminology, section structure, and evidence rating scales for each major donor's reporting conventions." },
+      "4": { "title": "Sector-aware analysis", "body": "Select your sector — Protection, Livelihoods, WASH, Health, Education — and Athar applies the right analytical lens to your data." }
+    }
+  },
+  "FinalCTA": {
+    "h2": "Ready to reclaim your reporting time?",
+    "sub": "Athar is currently in limited access for MEAL professionals. Request access to be among the first cohort.",
+    "disclaimer": "No commitment required · For MEAL officers, managers, and consultants in international development"
+  },
+  "Footer": {
+    "copy": "© 2026 Athar Platform",
+    "links": ["Privacy", "Terms", "Data Processing Agreement"]
+  }
+}
