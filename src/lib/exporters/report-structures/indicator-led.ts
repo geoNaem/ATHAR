@@ -1,283 +1,208 @@
-/**
- * STRUCTURE B — INDICATOR-LED
- *
- * Section order:
- *  1. Cover Page
- *  2. Table of Contents
- *  3. Executive Summary
- *  4. Methodology Note
- *  5. Findings by Indicator (one H2 per logframe_alignment entry)
- *  6. Emerging Themes Not Captured by Logframe
- *  7. Gaps and Data Limitations
- *  8. Recommendations
- *  9. Annex A: Full Theme Coding Summary (table)
- * 10. Annex B: Data Retention Statement
- */
+import { Paragraph, HeadingLevel, TextRun, BorderStyle, AlignmentType } from 'docx';
+import { AnalysisResult } from '../../../types/analysis-result';
+import { DonorPreset } from '../donor-presets';
+import { AR_LABELS } from '../rtl-config';
 
-import {
-  Document,
-  Paragraph,
-  TableOfContents,
-  SectionType,
-  PageOrientation,
-  TextRun,
-} from 'docx';
-import type { AnalysisResult, EvidenceStrength } from '../../types/analysis-result';
-import type { DonorPreset } from '../exporters/donor-presets';
-import {
-  buildCoverPage,
-  buildExecutiveSummary,
-  buildMethodologyNote,
-  buildRecommendations,
-  buildCrossCuttingIssues,
-  buildDataRetentionAnnex,
-  buildFullThemeCodingTable,
-  buildHeader,
-  buildFooter,
-  evidenceBadge,
-  h1,
-  h2,
-  h3,
-  body,
-  quoteParagraph,
-  attribution,
-  pageBreak,
-  spacer,
-  bullet,
-  TEAL,
-} from '../exporters/word-exporter';
-
-// ── Indicator findings builder ────────────────────────────────────────────────
-
-function buildIndicatorSection(
+export function buildIndicatorSections(
   result: AnalysisResult,
-  preset: DonorPreset
+  preset: DonorPreset,
+  language: 'en' | 'ar' = 'en'
 ): Paragraph[] {
-  const sections: Paragraph[] = [h1('Findings by Indicator')];
+  const isAr = language === 'ar';
+  const fonts = { font: isAr ? 'Traditional Arabic' : 'Arial' };
+  const sections: Paragraph[] = [];
+
+  const t = (en: string, ar: string) => isAr ? ar : en;
+
+  // EXECUTIVE SUMMARY & METHODOLOGY
+  sections.push(
+    new Paragraph({
+      text: t('EXECUTIVE SUMMARY', AR_LABELS.executiveSummary),
+      heading: HeadingLevel.HEADING_1,
+      bidirectional: isAr
+    })
+  );
+  result.key_findings.slice(0, 2).forEach(f => {
+    sections.push(
+      new Paragraph({
+        children: [new TextRun({ text: f, ...fonts })],
+        spacing: { after: 200 },
+        bidirectional: isAr
+      })
+    );
+  });
+
+  sections.push(
+    new Paragraph({
+      text: t('METHODOLOGY NOTE', AR_LABELS.methodology),
+      heading: HeadingLevel.HEADING_1,
+      spacing: { before: 400 },
+      bidirectional: isAr
+    })
+  );
+  sections.push(
+    new Paragraph({
+      children: [new TextRun({ text: preset.methodologyNote.replace('[methodology]', result.methodology), ...fonts })],
+      spacing: { after: 120 },
+      bidirectional: isAr
+    })
+  );
+
+  // FINDINGS BY INDICATOR
+  sections.push(
+    new Paragraph({
+      text: t('FINDINGS BY INDICATOR', 'النتائج حسب المؤشر'),
+      heading: HeadingLevel.HEADING_1,
+      spacing: { before: 400 },
+      bidirectional: isAr
+    })
+  );
 
   if (result.logframe_alignment.length === 0) {
     sections.push(
-      body(
-        'No logframe indicators were provided or aligned during analysis. ' +
-        'Consider re-running the analysis with logframe context pasted in the configuration step.'
-      )
+      new Paragraph({
+        text: isAr ? 'لم يتم توفير مؤشرات إطار منطقي لهذا التحليل. انظر المحاور الناشئة أدناه.' : 'No logframe indicators were provided for this analysis. See Emerging Themes below.',
+        spacing: { after: 200 },
+        bidirectional: isAr
+      })
     );
-    return sections;
   }
 
-  for (const alignment of result.logframe_alignment) {
-    sections.push(h2(alignment.indicator));
+  result.logframe_alignment.forEach((entry, idx) => {
+    // Reporting Level label (EU context)
+    if (preset.reportingLevels) {
+      const level = preset.reportingLevels[idx % preset.reportingLevels.length];
+      sections.push(
+        new Paragraph({
+          children: [new TextRun({ text: t('Result level: ', 'مستوى النتيجة: ') + level, italics: true, color: 'E8A87C', size: 18, ...fonts })],
+          spacing: { before: 180 },
+          bidirectional: isAr
+        })
+      );
+    }
 
-    // Evidence strength badge
     sections.push(
       new Paragraph({
-        children: [
-          new TextRun({ text: 'Evidence Strength: ', font: 'Arial', size: 20, bold: true, color: TEAL }),
-          evidenceBadge(alignment.evidence_strength as EvidenceStrength, preset),
-        ],
-        spacing: { after: 80 },
+        text: entry.indicator,
+        heading: HeadingLevel.HEADING_2,
+        spacing: { before: 120, after: 60 },
+        bidirectional: isAr
       })
     );
 
-    // Body narrative
-    sections.push(
-      body(
-        `Analysis identified "${alignment.aligned_theme}" as the primary theme ` +
-        `aligned to this indicator. ${alignment.supporting_quotes_count} supporting quote(s) were extracted.`
-      )
-    );
+    // Evidence Strength Badge
+    let strengthColor = '5F5E5A';
+    if (entry.evidence_strength === 'Strong') strengthColor = '3B6D11';
+    if (entry.evidence_strength === 'Moderate') strengthColor = '854F0B';
+    if (entry.evidence_strength === 'Not found') strengthColor = '791F1F';
 
-    // Find matching theme and render details
-    const matchedTheme = result.themes.find(t => t.name === alignment.aligned_theme);
-
-    if (matchedTheme) {
-      sections.push(body(matchedTheme.description));
-
-      if (matchedTheme.sub_themes.length > 0) {
-        sections.push(h3('Supporting Sub-themes'));
-        for (const sub of matchedTheme.sub_themes) {
-          sections.push(
-            new Paragraph({
-              children: [
-                new TextRun({ text: `${sub.name}: `, font: 'Arial', size: 22, bold: true }),
-                new TextRun({ text: sub.description, font: 'Arial', size: 22 }),
-              ],
-              bullet: { level: 0 },
-              spacing: { after: 80 },
-            })
-          );
-        }
-      }
-
-      // Top 2 quotes
-      const topQuotes = matchedTheme.quotes.slice(0, 2);
-      if (topQuotes.length > 0) {
-        sections.push(h3('Supporting Evidence'));
-        for (const q of topQuotes) {
-          sections.push(quoteParagraph(q));
-          sections.push(attribution(result.transcript_type === 'SSI' ? preset.ssiLabel : preset.fgdLabel));
-        }
-      }
+    let s: string = entry.evidence_strength;
+    if (isAr) {
+       if (s === 'Strong') s = AR_LABELS.strong;
+       else if (s === 'Moderate') s = AR_LABELS.moderate;
+       else if (s === 'Weak') s = AR_LABELS.weak;
+       else if (s === 'Not found') s = AR_LABELS.notFound;
     }
+    const currentStrengthLabel = s;
 
-    sections.push(spacer(1));
-  }
-
-  return sections;
-}
-
-// ── Emerging themes (no logframe alignment) ───────────────────────────────────
-
-function buildEmergingThemes(
-  result: AnalysisResult,
-  preset: DonorPreset
-): Paragraph[] {
-  // Find themes not referenced in any logframe_alignment entry
-  const alignedThemeNames = new Set(result.logframe_alignment.map(a => a.aligned_theme));
-  const emerging = result.themes.filter(t => !alignedThemeNames.has(t.name));
-
-  if (emerging.length === 0) return [];
-
-  const sections: Paragraph[] = [
-    h1('Emerging Themes Not Captured by Logframe'),
-    body(
-      'The following themes emerged from the data but were not directly linked to any logframe indicator. ' +
-      'These may represent important contextual factors, enabling conditions, or areas for future programming consideration.'
-    ),
-  ];
-
-  for (const theme of emerging) {
-    sections.push(h2(theme.name));
     sections.push(
       new Paragraph({
         children: [
-          new TextRun({ text: `Frequency: ×${theme.frequency}`, font: 'Arial', size: 20, italics: true, color: '888888' }),
+          new TextRun({ text: t('Evidence Strength: ', 'قوة الدليل: '), size: 20, bold: true, ...fonts }),
+          new TextRun({ text: `[${currentStrengthLabel}]`, size: 20, bold: true, color: strengthColor, ...fonts })
         ],
-        spacing: { after: 80 },
+        spacing: { after: 120 },
+        bidirectional: isAr
       })
     );
-    sections.push(body(theme.description));
-    const topQuote = theme.quotes[0];
-    if (topQuote) {
-      sections.push(quoteParagraph(topQuote));
-      sections.push(attribution(result.transcript_type === 'SSI' ? preset.ssiLabel : preset.fgdLabel));
+
+    const theme = result.themes.find(t => t.name === entry.aligned_theme);
+    if (theme) {
+      sections.push(
+        new Paragraph({
+          children: [new TextRun({ text: theme.description, ...fonts })],
+          spacing: { after: 120 },
+          bidirectional: isAr
+        })
+      );
+      theme.quotes.slice(0, 2).forEach(quote => {
+         sections.push(
+          new Paragraph({
+            indent: { left: 720 },
+            border: { 
+              left: isAr ? undefined : { style: BorderStyle.SINGLE, size: 6, color: 'C84B31', space: 20 },
+              right: isAr ? { style: BorderStyle.SINGLE, size: 6, color: 'C84B31', space: 20 } : undefined
+            },
+            children: [new TextRun({ text: `"${quote}"`, italics: true, color: '2C1503', ...fonts })],
+            spacing: { before: 60, after: 60 },
+            bidirectional: isAr
+          })
+        );
+      });
     }
-    sections.push(spacer(1));
-  }
-
-  return sections;
-}
-
-// ── Main document builder ─────────────────────────────────────────────────────
-
-export function buildIndicatorLedDocument(
-  result: AnalysisResult,
-  preset: DonorPreset,
-  orgName = '',
-  projectName = ''
-): Document {
-  const pageSize = {
-    width: 11906,
-    height: 16838,
-    orientation: PageOrientation.PORTRAIT,
-  };
-
-  const margins = { top: 1440, right: 1440, bottom: 1440, left: 1440 };
-  const docTitle = 'Qualitative Analysis Report — Indicator-Led';
-
-  return new Document({
-    creator: 'Athar أثر',
-    title: docTitle,
-    description: `Indicator-led analysis report — ${result.sector} — ${result.transcript_type}`,
-    styles: {
-      default: {
-        heading1: {
-          run: { font: 'Arial', size: 36, bold: true, color: TEAL },
-          paragraph: { spacing: { before: 300, after: 150 } },
-        },
-        heading2: {
-          run: { font: 'Arial', size: 28, bold: true, color: '333333' },
-          paragraph: { spacing: { before: 240, after: 120 } },
-        },
-        heading3: {
-          run: { font: 'Arial', size: 24, bold: true, color: '1A1A1A' },
-          paragraph: { spacing: { before: 180, after: 80 } },
-        },
-        listParagraph: { run: { font: 'Arial', size: 22 } },
-      },
-    },
-    sections: [
-      // ── Section 1: Cover Page ──
-      {
-        properties: {
-          page: { size: pageSize, margin: margins },
-          type: SectionType.NEXT_PAGE,
-        },
-        children: [
-          ...buildCoverPage(result, orgName, projectName, preset),
-          pageBreak(),
-        ],
-      },
-
-      // ── Section 2: Main Report ──
-      {
-        properties: {
-          page: { size: pageSize, margin: margins },
-          type: SectionType.NEXT_PAGE,
-          pageNumberStart: 1,
-        },
-        headers: { default: buildHeader(docTitle) },
-        footers: { default: buildFooter(preset) },
-        children: [
-          // Table of Contents
-          h1('Table of Contents'),
-          new TableOfContents('Table of Contents', {
-            hyperlink: true,
-            headingStyleRange: '1-3',
-          }),
-          pageBreak(),
-
-          // Executive Summary
-          ...buildExecutiveSummary(result),
-          pageBreak(),
-
-          // Methodology Note
-          ...buildMethodologyNote(result, preset),
-          pageBreak(),
-
-          // Findings by Indicator
-          ...buildIndicatorSection(result, preset),
-          pageBreak(),
-
-          // Emerging Themes
-          ...buildEmergingThemes(result, preset),
-          ...(buildEmergingThemes(result, preset).length > 0 ? [pageBreak()] : []),
-
-          // Gaps and Limitations
-          ...buildCrossCuttingIssues(result),
-          pageBreak(),
-
-          // Recommendations
-          ...buildRecommendations(result),
-          pageBreak(),
-
-          // Annex A: Full Theme Coding Table
-          ...buildFullThemeCodingTable(result),
-          pageBreak(),
-
-          // Annex B: Data Retention
-          ...buildDataRetentionAnnex(),
-
-          // Mandatory donor annex
-          ...(preset.mandatoryAnnex
-            ? [
-                pageBreak(),
-                h1(`Annex C: ${preset.label} Disclosure`),
-                body(preset.mandatoryAnnex),
-              ]
-            : []),
-        ],
-      },
-    ],
   });
+
+  // EMERGING THEMES
+  const alignedThemes = result.logframe_alignment.map(e => e.aligned_theme);
+  const unalignedThemes = result.themes.filter(t => !alignedThemes.includes(t.name));
+
+  if (unalignedThemes.length > 0) {
+    sections.push(
+      new Paragraph({
+        text: t('EMERGING THEMES', 'المحاور الناشئة'),
+        heading: HeadingLevel.HEADING_1,
+        spacing: { before: 400 },
+        bidirectional: isAr
+      })
+    );
+    unalignedThemes.forEach(t => {
+      sections.push(
+        new Paragraph({
+          text: t.name,
+          heading: HeadingLevel.HEADING_2,
+          spacing: { before: 240, after: 120 },
+          bidirectional: isAr
+        })
+      );
+      sections.push(
+        new Paragraph({
+          children: [new TextRun({ text: t.description, ...fonts })],
+          spacing: { after: 150 },
+          bidirectional: isAr
+        })
+      );
+    });
+  }
+
+  // GAPS & RECOMMENDATIONS
+  sections.push(
+    new Paragraph({
+      text: t('CROSS-CUTTING ISSUES', AR_LABELS.gaps),
+      heading: HeadingLevel.HEADING_1,
+      spacing: { before: 400 },
+      bidirectional: isAr
+    })
+  );
+  result.gaps_and_limitations.forEach(gap => {
+    sections.push(new Paragraph({ text: gap, bullet: { level: 0 }, bidirectional: isAr }));
+  });
+
+  sections.push(
+    new Paragraph({
+      text: t('RECOMMENDATIONS', AR_LABELS.recommendations),
+      heading: HeadingLevel.HEADING_1,
+      spacing: { before: 400 },
+      bidirectional: isAr
+    })
+  );
+  result.recommendations.forEach(rec => {
+    sections.push(new Paragraph({ text: rec, numbering: { reference: 'numbers', level: 0 }, bidirectional: isAr }));
+  });
+
+  // ANNEXES (Same as thematic)
+  sections.push(new Paragraph({ text: t('ANNEXES', AR_LABELS.annexes), heading: HeadingLevel.HEADING_1, spacing: { before: 800 }, bidirectional: isAr }));
+  sections.push(new Paragraph({ text: t('ANNEX A — DATA RETENTION STATEMENT', 'ملحق أ — بيان حماية البيانات'), heading: HeadingLevel.HEADING_2, bidirectional: isAr }));
+  sections.push(new Paragraph({ children: [new TextRun({ text: isAr ? AR_LABELS.retentionNote : 'Professional analysis statement here...', ...fonts })], bidirectional: isAr }));
+
+  return sections;
 }

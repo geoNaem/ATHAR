@@ -1,16 +1,10 @@
-export enum MethodologyId {
-  THEMATIC = 'thematic',
-  FRAMEWORK = 'framework',
-  GROUNDED = 'grounded',
-  CONTENT = 'content',
-  AUTO = 'auto'
-}
+export type MethodologyId = 
+  'thematic' | 'framework' | 'grounded' | 'content' | 'auto'
 
-export type MethodologyConfig = {
-  id: MethodologyId;
-  name: string;
-  description: string;
-  outputFormat: string;
-  badgeLabel: string;
-  isPopular?: boolean;
-};
+export interface MethodologyConfig {
+  id: MethodologyId
+  label: string
+  description: string
+  outputFormat: string
+  badge?: string
+}

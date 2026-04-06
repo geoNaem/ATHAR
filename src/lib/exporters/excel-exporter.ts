@@ -1,304 +1,237 @@
-/**
- * Excel export builder — runs client-side (browser) and server-side.
- *
- * 4-sheet workbook:
- *  Sheet 1 — Coding Matrix
- *  Sheet 2 — Frequency Summary
- *  Sheet 3 — Logframe Alignment
- *  Sheet 4 — Analysis Metadata
- */
-
 import ExcelJS from 'exceljs';
-import type { AnalysisResult, EvidenceStrength } from '../../types/analysis-result';
+import { AnalysisResult } from '../../types/analysis-result';
+import { AR_LABELS } from './rtl-config';
 
-// ── Design tokens ─────────────────────────────────────────────────────────────
-const TEAL      = '1A5C5A';
-const TEAL_ARGB = 'FF1A5C5A';
-const MUTED     = 'FF888888';
-const AMBER     = 'FFB07800';
-const RED       = 'FFCC0000';
-const OFF_WHITE = 'FFF5F5F2';
-const WHITE     = 'FFFFFFFF';
-const SAFFRON   = 'FFC4930A';
-const LIGHT_TEAL_BG = 'FFEAF4F3';
-
-function tealFill(): ExcelJS.Fill {
-  return { type: 'pattern', pattern: 'solid', fgColor: { argb: TEAL_ARGB } };
-}
-
-function altFill(even: boolean): ExcelJS.Fill {
-  return {
-    type: 'pattern',
-    pattern: 'solid',
-    fgColor: { argb: even ? OFF_WHITE : WHITE },
-  };
-}
-
-function evidenceFont(strength: EvidenceStrength): Partial<ExcelJS.Font> {
-  const colorMap: Record<EvidenceStrength, string> = {
-    Strong:    TEAL_ARGB,
-    Moderate:  AMBER,
-    Weak:      MUTED,
-    'Not found': RED,
-  };
-  return { color: { argb: colorMap[strength] ?? MUTED }, bold: strength === 'Strong' };
-}
-
-function applyHeaderRow(row: ExcelJS.Row): void {
-  row.height = 22;
-  row.eachCell(cell => {
-    cell.fill = tealFill();
-    cell.font = { name: 'Arial', size: 10, bold: true, color: { argb: WHITE } };
-    cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: false };
-    cell.border = {
-      bottom: { style: 'thin', color: { argb: 'FFE0E0E0' } },
-    };
-  });
-}
-
-// ── Sheet 1: Coding Matrix ───────────────────────────────────────────────────
-
-function buildCodingMatrix(wb: ExcelJS.Workbook, result: AnalysisResult, rtl: boolean): void {
-  const ws = wb.addWorksheet('Coding Matrix', {
-    views: [{ state: 'frozen', ySplit: 1, rightToLeft: rtl }],
-  });
-
-  ws.columns = [
-    { header: 'Theme ID',          key: 'themeId',          width: 8 },
-    { header: 'Theme Name',         key: 'themeName',         width: 28 },
-    { header: 'Sub-theme',          key: 'subTheme',          width: 24 },
-    { header: 'Quote',              key: 'quote',             width: 55 },
-    { header: 'Frequency',          key: 'frequency',         width: 11 },
-    { header: 'Source',             key: 'source',            width: 10 },
-    { header: 'Logframe Indicator', key: 'logframeIndicator', width: 32 },
-    { header: 'Evidence Strength',  key: 'evidenceStrength',  width: 18 },
-  ];
-
-  // Style header row
-  applyHeaderRow(ws.getRow(1));
-  ws.autoFilter = { from: 'A1', to: { row: 1, column: 8 } };
-
-  let rowIdx = 2;
-
-  result.themes.forEach((theme, tIdx) => {
-    const themeId = `T${tIdx + 1}`;
-    const logframeEntry = result.logframe_alignment.find(a => a.aligned_theme === theme.name);
-    const indicator = logframeEntry?.indicator ?? '—';
-    const evidenceStrength = logframeEntry?.evidence_strength ?? 'Not found';
-
-    // Get sub-themes to pair with quotes
-    const maxRows = Math.max(theme.quotes.length, theme.sub_themes.length, 1);
-
-    for (let i = 0; i < maxRows; i++) {
-      const isEven = rowIdx % 2 === 0;
-      const row = ws.addRow({
-        themeId:          i === 0 ? themeId : '',
-        themeName:        i === 0 ? theme.name : '',
-        subTheme:         theme.sub_themes[i]?.name ?? '',
-        quote:            theme.quotes[i] ?? '',
-        frequency:        i === 0 ? theme.frequency : '',
-        source:           result.transcript_type,
-        logframeIndicator: i === 0 ? indicator : '',
-        evidenceStrength:  i === 0 ? evidenceStrength : '',
-      });
-
-      row.eachCell((cell, colNumber) => {
-        cell.fill = altFill(isEven);
-        cell.font = { name: 'Arial', size: 10, color: { argb: '1A1A1A'.padStart(8, 'FF') } };
-        cell.alignment = { vertical: 'top', wrapText: colNumber === 4 };
-
-        // Evidence strength conditional color
-        if (colNumber === 8 && i === 0 && evidenceStrength) {
-          cell.font = {
-            ...cell.font,
-            ...evidenceFont(evidenceStrength as EvidenceStrength),
-          };
-        }
-      });
-
-      rowIdx++;
-    }
-  });
-}
-
-// ── Sheet 2: Frequency Summary ───────────────────────────────────────────────
-
-function buildFrequencySummary(wb: ExcelJS.Workbook, result: AnalysisResult, rtl: boolean): void {
-  const ws = wb.addWorksheet('Frequency Summary', {
-    views: [{ state: 'frozen', ySplit: 1, rightToLeft: rtl }],
-  });
-
-  ws.columns = [
-    { header: 'Theme Name', key: 'name',       width: 30 },
-    { header: 'Count',       key: 'count',      width: 10 },
-    { header: '% of Total',  key: 'pct',        width: 12 },
-    { header: 'Visual Bar',  key: 'bar',        width: 40 },
-  ];
-
-  applyHeaderRow(ws.getRow(1));
-
-  const sorted = [...result.themes].sort((a, b) => b.frequency - a.frequency);
-  const total = sorted.reduce((s, t) => s + t.frequency, 0);
-
-  sorted.forEach((theme, idx) => {
-    const rowNum = idx + 2; // 1-indexed, row 1 is header
-    const row = ws.addRow({
-      name:  theme.name,
-      count: theme.frequency,
-      pct:   theme.frequency / (total || 1),
-      bar:   '',  // formula applied below
-    });
-
-    const isEven = rowNum % 2 === 0;
-
-    row.eachCell(cell => {
-      cell.fill = altFill(isEven);
-      cell.font = { name: 'Arial', size: 10 };
-      cell.alignment = { vertical: 'middle' };
-    });
-
-    // % format
-    const pctCell = row.getCell(3);
-    pctCell.numFmt = '0.0%';
-
-    // Bar formula using REPT
-    const barCell = row.getCell(4);
-    barCell.value = { formula: `REPT("█",ROUND(C${rowNum}*40,0))`, result: '' };
-    barCell.font = { name: 'Courier New', size: 9, color: { argb: TEAL_ARGB } };
-    barCell.alignment = { horizontal: 'left', vertical: 'middle' };
-  });
-
-  // TOTAL row
-  const totalRowNum = sorted.length + 2;
-  const totalRow = ws.addRow({ name: 'TOTAL', count: total, pct: 1.0, bar: '' });
-  totalRow.eachCell((cell, colNum) => {
-    cell.fill = tealFill();
-    cell.font = { name: 'Arial', size: 10, bold: true, color: { argb: WHITE } };
-    cell.alignment = { vertical: 'middle', horizontal: colNum === 1 ? 'left' : 'center' };
-  });
-  totalRow.getCell(2).value = { formula: `SUM(B2:B${totalRowNum - 1})`, result: total };
-  totalRow.getCell(3).value = { formula: '1', result: 1 };
-  totalRow.getCell(3).numFmt = '0%';
-}
-
-// ── Sheet 3: Logframe Alignment ──────────────────────────────────────────────
-
-function buildLogframeAlignment(wb: ExcelJS.Workbook, result: AnalysisResult, rtl: boolean): void {
-  const ws = wb.addWorksheet('Logframe Alignment', {
-    views: [{ state: 'frozen', ySplit: 1, rightToLeft: rtl }],
-  });
-
-  ws.columns = [
-    { header: 'Indicator',               key: 'indicator',       width: 40 },
-    { header: 'Aligned Theme',           key: 'alignedTheme',    width: 28 },
-    { header: 'Evidence Strength',        key: 'evidenceStrength', width: 18 },
-    { header: 'Supporting Quotes Count', key: 'quotesCount',     width: 22 },
-  ];
-
-  applyHeaderRow(ws.getRow(1));
-
-  if (result.logframe_alignment.length === 0) {
-    const noDataRow = ws.addRow({
-      indicator: 'No logframe indicators were provided. Re-run analysis with logframe context to see alignment.',
-      alignedTheme: '',
-      evidenceStrength: '',
-      quotesCount: '',
-    });
-    ws.mergeCells(`A2:D2`);
-    const mergedCell = noDataRow.getCell(1);
-    mergedCell.font = { name: 'Arial', size: 10, italic: true, color: { argb: MUTED } };
-    mergedCell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
-    noDataRow.height = 36;
-    return;
-  }
-
-  result.logframe_alignment.forEach((entry, idx) => {
-    const isEven = (idx + 2) % 2 === 0;
-    const row = ws.addRow({
-      indicator:       entry.indicator,
-      alignedTheme:    entry.aligned_theme,
-      evidenceStrength: entry.evidence_strength,
-      quotesCount:     entry.supporting_quotes_count,
-    });
-
-    row.eachCell((cell, colNum) => {
-      cell.fill = altFill(isEven);
-      cell.font = { name: 'Arial', size: 10 };
-      cell.alignment = { vertical: 'top', wrapText: colNum === 1 };
-
-      // Color evidence column
-      if (colNum === 3) {
-        cell.font = {
-          ...cell.font,
-          ...evidenceFont(entry.evidence_strength as EvidenceStrength),
-        };
-      }
-    });
-  });
-}
-
-// ── Sheet 4: Analysis Metadata ───────────────────────────────────────────────
-
-function buildMetadata(wb: ExcelJS.Workbook, result: AnalysisResult, rtl: boolean): void {
-  const ws = wb.addWorksheet('Analysis Metadata', {
-    views: [{ rightToLeft: rtl }],
-  });
-
-  ws.getColumn(1).width = 22;
-  ws.getColumn(2).width = 50;
-
-  const rows: [string, string | number][] = [
-    ['Analysis Date',   new Date().toISOString()],
-    ['Methodology',     result.methodology],
-    ['Sector',          result.sector],
-    ['Transcript Type', result.transcript_type],
-    ['Words Analyzed',  result.word_count_analyzed],
-    ['Sample Size',     result.sample_size ?? 'Not specified'],
-    ['Confidence Note', result.confidence_note ?? ''],
-    ['Generated By',    'Athar أثر — athar.ai'],
-    ['Data Retention',  'Files processed in memory only. Nothing stored.'],
-  ];
-
-  rows.forEach(([key, value], idx) => {
-    const row = ws.getRow(idx + 2); // start at row 2
-    row.getCell(1).value = key;
-    row.getCell(1).font = { name: 'Arial', size: 10, bold: true, color: { argb: TEAL_ARGB } };
-    row.getCell(1).alignment = { vertical: 'top' };
-
-    row.getCell(2).value = value;
-    row.getCell(2).font = { name: 'Arial', size: 10 };
-    row.getCell(2).alignment = { vertical: 'top', wrapText: true };
-
-    // Auto-height for long confidence note
-    if (key === 'Confidence Note') {
-      row.height = 36;
-    }
-  });
-}
-
-// ── Main builder ─────────────────────────────────────────────────────────────
-
+/**
+ * Builds the Athar Excel Coding Matrix & Frequency Summary.
+ * Streams a structured .xlsx file suitable for MEAL metadata auditing.
+ */
 export async function buildExcelExport(
   result: AnalysisResult,
   language: 'en' | 'ar' = 'en'
 ): Promise<Buffer> {
-  const wb = new ExcelJS.Workbook();
-  wb.creator = 'Athar أثر';
-  wb.created = new Date();
-  wb.modified = new Date();
-  wb.properties.date1904 = false;
-
-  const rtl = language === 'ar';
-
-  if (rtl) {
-    wb.views = [{ rightToLeft: true, x: 0, y: 0, width: 10000, height: 20000 }];
+  const workbook = new ExcelJS.Workbook();
+  const isAr = language === 'ar';
+  
+  if (isAr) {
+    (workbook as any).views = [{ rightToLeft: true }];
   }
 
-  buildCodingMatrix(wb, result, rtl);
-  buildFrequencySummary(wb, result, rtl);
-  buildLogframeAlignment(wb, result, rtl);
-  buildMetadata(wb, result, rtl);
+  // Define brand colors
+  const SIENNA = 'FFC84B31';
+  const BONE = 'FFF5EDD9';
+  const DARK = 'FF2C1503';
+  const ACCENT = 'FFE8A87C';
 
-  const buffer = await wb.xlsx.writeBuffer();
-  return Buffer.from(buffer);
+  const L = isAr ? AR_LABELS : null;
+
+  // 1. SHEET: Coding Matrix
+  const matrixSheet = workbook.addWorksheet(
+    L ? L.codingMatrix : 'Coding Matrix', 
+    { views: [{ rightToLeft: isAr }] }
+  );
+  
+  matrixSheet.columns = [
+    { header: L ? L.themeId : 'Theme ID', key: 'id', width: 10 },
+    { header: L ? L.themeName : 'Theme Name', key: 'name', width: 30 },
+    { header: L ? L.subTheme : 'Sub-theme', key: 'sub', width: 25 },
+    { header: L ? L.quote : 'Quote', key: 'quote', width: 60 },
+    { header: L ? L.frequency : 'Frequency', key: 'freq', width: 12 },
+    { header: L ? L.source : 'Source', key: 'source', width: 12 },
+    { header: L ? L.logframeIndicator : 'Logframe Indicator', key: 'indicator', width: 35 },
+    { header: L ? L.evidenceStrength : 'Evidence Strength', key: 'strength', width: 22 }
+  ];
+
+  // Header styling
+  matrixSheet.getRow(1).eachCell((cell) => {
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: SIENNA } };
+    cell.font = { color: { argb: BONE }, bold: true, name: 'Arial', size: 10 };
+    cell.alignment = { horizontal: isAr ? 'right' : 'center', vertical: 'middle' };
+  });
+
+  // Populate data
+  let rowIdx = 2;
+  result.themes.forEach((theme, i) => {
+    const themeId = `T${i + 1}`;
+    const indicator = result.logframe_alignment.find(e => e.aligned_theme === theme.name);
+    
+    // Mapping strength to AR labels
+    let strengthVal: string = indicator?.evidence_strength || '';
+    if (isAr && strengthVal) {
+      if (strengthVal === 'Strong') strengthVal = L!.strong;
+      else if (strengthVal === 'Moderate') strengthVal = L!.moderate;
+      else if (strengthVal === 'Weak') strengthVal = L!.weak;
+      else if (strengthVal === 'Not found') strengthVal = L!.notFound;
+    }
+
+    const baseRowValues = {
+      id: themeId,
+      name: theme.name,
+      sub: theme.sub_themes.map(st => st.name).join(', '),
+      freq: theme.frequency,
+      source: result.transcript_type,
+      indicator: indicator?.indicator || '',
+      strength: strengthVal
+    };
+
+    if (theme.quotes.length > 0) {
+      theme.quotes.forEach(quote => {
+        const row = matrixSheet.addRow({ ...baseRowValues, quote });
+        styleMatrixRow(row, rowIdx % 2 === 0, BONE, isAr, L);
+        rowIdx++;
+      });
+    } else {
+      const row = matrixSheet.addRow({ 
+        ...baseRowValues, 
+        quote: isAr ? '(لم يستخرج أي اقتباس)' : '(No quotes extracted)' 
+      });
+      styleMatrixRow(row, rowIdx % 2 === 0, BONE, isAr, L);
+      rowIdx++;
+    }
+  });
+
+  // 2. SHEET: Frequency Summary
+  const freqSheet = workbook.addWorksheet(
+    L ? L.frequencySummary : 'Frequency Summary', 
+    { views: [{ rightToLeft: isAr }] }
+  );
+
+  freqSheet.columns = [
+    { header: L ? L.themeName : 'Theme Name', key: 'name', width: 35 },
+    { header: L ? L.frequency : 'Count', key: 'count', width: 12 },
+    { header: isAr ? 'النسبة' : '% of Total', key: 'pct', width: 15 },
+    { header: isAr ? 'الرسم البياني' : 'Visual Bar', key: 'bar', width: 45 }
+  ];
+
+  freqSheet.getRow(1).eachCell((cell) => {
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: SIENNA } };
+    cell.font = { color: { argb: BONE }, bold: true };
+    cell.alignment = { horizontal: isAr ? 'right' : 'center' };
+  });
+
+  const totalFreq = result.themes.reduce((acc, t) => acc + t.frequency, 0);
+  const sortedThemes = [...result.themes].sort((a, b) => b.frequency - a.frequency);
+
+  sortedThemes.forEach((t, i) => {
+    const rowNum = i + 2;
+    const row = freqSheet.addRow([
+      t.name,
+      t.frequency,
+      { formula: `B${rowNum}/SUM($B$2:$B$${sortedThemes.length + 1})`, result: t.frequency / totalFreq },
+      { formula: `REPT("█",ROUND(C${rowNum}*40,0))`, result: '' }
+    ]);
+    row.getCell(4).font = { name: 'Courier New', size: 9, color: { argb: SIENNA } };
+    row.eachCell(cell => {
+      cell.alignment = { horizontal: isAr ? 'right' : 'left' };
+    });
+  });
+
+  const totalRow = freqSheet.addRow([isAr ? 'المجموع' : 'TOTAL', totalFreq, '100%', '']);
+  totalRow.eachCell((cell) => {
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: SIENNA } };
+    cell.font = { color: { argb: BONE }, bold: true };
+    cell.alignment = { horizontal: isAr ? 'right' : 'left' };
+  });
+
+  // 3. SHEET: Logframe Alignment
+  const logSheet = workbook.addWorksheet(
+    L ? L.logframeAlignment : 'Logframe Alignment', 
+    { views: [{ rightToLeft: isAr }] }
+  );
+
+  logSheet.columns = [
+    { header: L ? L.logframeIndicator : 'Indicator', key: 'indicator', width: 45 },
+    { header: L ? L.themeName : 'Aligned Theme', key: 'theme', width: 32 },
+    { header: L ? L.evidenceStrength : 'Evidence Strength', key: 'strength', width: 22 },
+    { header: isAr ? 'عدد الاقتباسات الداعمة' : 'Supporting Quotes Count', key: 'quotesCount', width: 24 }
+  ];
+
+  logSheet.getRow(1).eachCell((cell) => {
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: SIENNA } };
+    cell.font = { color: { argb: BONE }, bold: true };
+    cell.alignment = { horizontal: isAr ? 'right' : 'center' };
+  });
+
+  if (result.logframe_alignment.length === 0) {
+    logSheet.mergeCells('A2:D2');
+    const noteCell = logSheet.getCell('A2');
+    noteCell.value = isAr ? 'لم يتم توفير مؤشرات إطار منطقي لهذا التحليل.' : 'No logframe indicators were provided.';
+    noteCell.font = { italic: true, color: { argb: 'FF5F5E5A' } };
+    noteCell.alignment = { horizontal: 'center' };
+  } else {
+    result.logframe_alignment.forEach((entry, i) => {
+      const theme = result.themes.find(t => t.name === entry.aligned_theme);
+      let s: string = entry.evidence_strength;
+      if (isAr) {
+         if (s === 'Strong') s = L!.strong;
+         else if (s === 'Moderate') s = L!.moderate;
+         else if (s === 'Weak') s = L!.weak;
+         else if (s === 'Not found') s = L!.notFound;
+      }
+      const row = logSheet.addRow([ entry.indicator, entry.aligned_theme, s, theme?.quotes.length || 0 ]);
+      row.eachCell((cell) => {
+         if (i % 2 === 0) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: BONE } };
+         cell.alignment = { horizontal: isAr ? 'right' : 'left' };
+      });
+    });
+  }
+
+  // 4. SHEET: Metadata
+  const metaSheet = workbook.addWorksheet(
+    L ? L.metadata : 'Analysis Metadata', 
+    { views: [{ rightToLeft: isAr }] }
+  );
+
+  metaSheet.getColumn('A').width = 28;
+  metaSheet.getColumn('B').width = 60;
+
+  metaSheet.mergeCells('A1:B1');
+  const metaHeader = metaSheet.getCell('A1');
+  metaHeader.value = isAr ? 'أثر ATHAR — البيانات الوصفية للتحليل' : 'ATHAR أثر — ANALYSIS METADATA';
+  metaHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: DARK } };
+  metaHeader.font = { bold: true, color: { argb: BONE }, size: 10 };
+  metaHeader.alignment = { horizontal: 'center' };
+
+  const metaItems = [
+    [isAr ? 'تاريخ التحليل' : 'Analysis Date', new Date().toISOString().split('T')[0]],
+    [isAr ? 'المنهجية' : 'Methodology', result.methodology],
+    [isAr ? 'القطاع' : 'Sector', result.sector],
+    [isAr ? 'نوع النسخة' : 'Transcript Type', result.transcript_type],
+    [isAr ? 'عدد الكلمات' : 'Word Count', result.word_count_analyzed],
+    [isAr ? 'ملاحظة الثقة' : 'Confidence Note', result.confidence_note],
+    [isAr ? 'أُنتج بواسطة' : 'Generated By', 'Athar أثر — athar.ai'],
+    [isAr ? 'حفظ البيانات' : 'Data Retention', isAr ? L!.retentionNote : 'Files processed in memory only. Nothing stored.']
+  ];
+
+  metaItems.forEach((item) => {
+    const row = metaSheet.addRow(item);
+    row.getCell(1).font = { bold: true, color: { argb: SIENNA }, name: 'Arial', size: 10 };
+    row.getCell(1).alignment = { horizontal: isAr ? 'right' : 'left' };
+    row.getCell(2).alignment = { wrapText: true, horizontal: isAr ? 'right' : 'left' };
+  });
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  return Buffer.from(buffer as ArrayBuffer);
+}
+
+function styleMatrixRow(row: ExcelJS.Row, isEven: boolean, boneColor: string, isAr: boolean, L: any) {
+  row.eachCell((cell) => {
+    if (isEven) cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: boneColor } };
+    cell.alignment = { horizontal: isAr ? 'right' : 'left' };
+  });
+  
+  const strengthCell = row.getCell(8);
+  const strength = strengthCell.value as string;
+  let color = 'FF5F5E5A';
+  
+  // Checking for both English and AR values since we populated with L or raw
+  const isStrong = strength === 'Strong' || (L && strength === L.strong);
+  const isModerate = strength === 'Moderate' || (L && strength === L.moderate);
+  const isNotFound = strength === 'Not found' || (L && strength === L.notFound);
+
+  if (isStrong) color = 'FF3B6D11';
+  if (isModerate) color = 'FFB07800';
+  if (isNotFound) color = 'FFCC0000';
+
+  strengthCell.font = { color: { argb: color }, bold: isStrong };
 }

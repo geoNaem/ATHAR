@@ -14,7 +14,7 @@ const intlMiddleware = createIntlMiddleware({
  * 1. next-intl for routing / language
  * 2. Zero-Retention Security for /api/analyze
  */
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ── 1. SECURITY LAYER (FOR /api/analyze) ──────────────────────────
@@ -61,10 +61,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Match all pathnames except for 
-  // - /api/:path (will be handled by security logic if it's analyze)
-  // - /_next (internal)
-  // - /_vercel (telemetry)
-  // - /favicon.ico, etc. (files)
-  matcher: ['/((?!api/((?!analyze).)*|_next|_vercel|favicon.ico|.*\\..*).*)', '/api/analyze']
+  matcher: ['/', '/(en|ar)/:path*', '/api/analyze']
 };
