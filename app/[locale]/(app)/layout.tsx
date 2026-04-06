@@ -1,3 +1,5 @@
+'use client';
+
 import { LayoutDashboard, PlusCircle, Settings, LogOut, Menu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '../../../src/navigation';

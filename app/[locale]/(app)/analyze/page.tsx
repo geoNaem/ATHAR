@@ -5,15 +5,15 @@ import { Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 // ── App Components ───────────────────────────────────────────────
-import UploadZone from '../../../components/analyze/UploadZone';
-import ConfigurePanel from '../../../components/analyze/ConfigurePanel';
-import ProcessingPanel from '../../../components/analyze/ProcessingPanel';
-import ResultPreview from '../../../components/analyze/ResultPreview';
-import ExportSelector from '../../../components/analyze/ExportSelector';
+import UploadZone from '../../../../components/analyze/UploadZone';
+import ConfigurePanel from '../../../../components/analyze/ConfigurePanel';
+import ProcessingPanel from '../../../../components/analyze/ProcessingPanel';
+import ResultPreview from '../../../../components/analyze/ResultPreview';
+import ExportSelector from '../../../../components/analyze/ExportSelector';
 
 // ── Security & Utilities ──────────────────────────────────────────
-import { ZeroRetentionGuard } from '../../../lib/zero-retention';
-import { AnalysisResult } from '../../../types/analysis-result';
+import { ZeroRetentionGuard } from '../../../../lib/zero-retention';
+import { AnalysisResult } from '../../../../types/analysis-result';
 
 type AnalyzeState = 'upload' | 'configure' | 'processing' | 'result';
 

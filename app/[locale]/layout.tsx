@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation';
 import React from 'react';
 
 export function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
+  return (locales as unknown as string[]).map((locale) => ({ locale }));
 }
 
 export default async function LocaleLayout({

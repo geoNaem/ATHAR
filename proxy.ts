@@ -14,7 +14,7 @@ const intlMiddleware = createIntlMiddleware({
  * 1. next-intl for routing / language
  * 2. Zero-Retention Security for /api/analyze
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ── 1. SECURITY LAYER (FOR /api/analyze) ──────────────────────────
