@@ -1,4 +1,4 @@
-import { AnalysisResult } from '../../types/analysis-result';
+import { AnalysisResult } from '@/types/analysis-result';
 
 export interface InfographicData {
   sector: string

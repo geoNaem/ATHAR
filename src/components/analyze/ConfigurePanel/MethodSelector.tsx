@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import styles from './ConfigurePanel.module.css';
-import { MethodologyId } from '../../../types/methodology';
+import styles from './configure.module.css';
+import { MethodologyId } from '@/types/methodology';
 
 interface MethodSelectorProps {
   selected: MethodologyId | null;

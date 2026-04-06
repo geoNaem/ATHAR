@@ -1,5 +1,5 @@
 import ExcelJS from 'exceljs';
-import { AnalysisResult } from '../../types/analysis-result';
+import { AnalysisResult } from '@/types/analysis-result';
 import { AR_LABELS } from './rtl-config';
 
 /**

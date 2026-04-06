@@ -1,13 +1,10 @@
 import '../globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import { locales } from '../../src/navigation';
+import { locales } from '@/navigation';
 import { notFound } from 'next/navigation';
+import { unstable_setRequestLocale } from 'next-intl/server';
 import React from 'react';
-
-export function generateStaticParams() {
-  return (locales as unknown as string[]).map((locale) => ({ locale }));
-}
 
 export default async function LocaleLayout({
   children,
@@ -16,6 +13,9 @@ export default async function LocaleLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
+  // Static rendering optimization
+  unstable_setRequestLocale(locale);
+
   // Validate that the incoming `locale` parameter is valid
   if (!locales.includes(locale as any)) notFound();
 

@@ -3,21 +3,26 @@
 import React, { useState, useEffect } from 'react';
 import { Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { unstable_setRequestLocale } from 'next-intl/server';
+
+export const dynamic = 'force-dynamic';
 
 // ── App Components ───────────────────────────────────────────────
-import UploadZone from '../../../../src/components/analyze/UploadZone';
-import ConfigurePanel from '../../../../src/components/analyze/ConfigurePanel';
-import ProcessingPanel from '../../../../src/components/analyze/ProcessingPanel';
-import ResultPreview from '../../../../src/components/analyze/ResultPreview';
-import ExportSelector from '../../../../src/components/analyze/ExportSelector';
+import UploadZone from '@/components/analyze/UploadZone';
+import ConfigurePanel from '@/components/analyze/ConfigurePanel';
+import ProcessingPanel from '@/components/analyze/ProcessingPanel';
+import ResultPreview from '@/components/analyze/ResultPreview';
+import ExportSelector from '@/components/analyze/ExportSelector';
 
 // ── Security & Utilities ──────────────────────────────────────────
-import { ZeroRetentionGuard } from '../../../../src/lib/zero-retention';
-import { AnalysisResult } from '../../../../src/types/analysis-result';
+import { ZeroRetentionGuard } from '@/lib/zero-retention';
+import { AnalysisResult } from '@/types/analysis-result';
 
 type AnalyzeState = 'upload' | 'configure' | 'processing' | 'result';
 
-export default function AnalyzePage() {
+export default function AnalyzePage({ params: { locale } }: { params: { locale: string } }) {
+  unstable_setRequestLocale(locale);
+  
   const [state, setState] = useState<AnalyzeState>('upload');
   
   // Data State (Strictly Managed)

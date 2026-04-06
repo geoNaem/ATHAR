@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations, useLocale } from 'next-intl';
-import { locales, Link, usePathname, useRouter } from '../src/navigation';
+import { locales, Link, usePathname, useRouter } from '@/navigation';
 import { useState, useEffect } from 'react';
 
 const LogoIcon = () => (

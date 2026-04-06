@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import styles from './ResultPreview.module.css';
-import { AnalysisResult } from '../../../types/analysis-result';
+import { AnalysisResult } from '@/types/analysis-result';
 import ThemeCard from './ThemeCard';
 import LogframeTable from './LogframeTable';
 import FindingsList from './FindingsList';

@@ -1,5 +1,5 @@
 import { Paragraph, HeadingLevel, TextRun, BorderStyle, AlignmentType, NumberFormat } from 'docx';
-import { AnalysisResult } from '../../../types/analysis-result';
+import { AnalysisResult } from '@/types/analysis-result';
 import { DonorPreset } from '../donor-presets';
 import { AR_LABELS } from '../rtl-config';
 

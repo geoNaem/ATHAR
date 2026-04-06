@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Info } from 'lucide-react';
-import styles from './ConfigurePanel.module.css';
+import styles from './configure.module.css';
 
 interface ContextPanelProps {
   sector: string;

@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import styles from './ConfigurePanel.module.css';
+import styles from './configure.module.css';
 import MethodSelector from './MethodSelector';
 import ContextPanel from './ContextPanel';
-import { MethodologyId } from '../../../types/methodology';
+import { MethodologyId } from '@/types/methodology';
 import { ArrowRight } from 'lucide-react';
 
 interface AnalysisConfig {

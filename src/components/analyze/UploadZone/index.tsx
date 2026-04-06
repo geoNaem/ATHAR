@@ -3,9 +3,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './UploadZone.module.css';
 import { Upload, CheckCircle2, AlertCircle, ArrowRight, Loader2, FileText, Users } from 'lucide-react';
-import { extractDocx } from '../../../lib/extractors/docx';
-import { extractXlsx } from '../../../lib/extractors/xlsx';
-import { normalizeText, detectLanguage } from '../../../lib/extractors/normalizer';
+import { extractDocx } from '@/lib/extractors/docx';
+import { extractXlsx } from '@/lib/extractors/xlsx';
+import { normalizeText, detectLanguage } from '@/lib/extractors/normalizer';
 
 interface UploadZoneProps {
   onExtracted: (text: string, lang: 'en' | 'ar' | 'mixed', filename: string, type: 'SSI' | 'FGD') => void;

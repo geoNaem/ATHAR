@@ -18,7 +18,7 @@ import {
   WidthType,
   SectionType
 } from 'docx';
-import { AnalysisResult } from '../../types/analysis-result';
+import { AnalysisResult } from '@/types/analysis-result';
 import { DonorPresetId, getDonorPreset, DonorPreset } from './donor-presets';
 import { buildThematicSections } from './report-structures/thematic';
 import { buildIndicatorSections } from './report-structures/indicator-led';

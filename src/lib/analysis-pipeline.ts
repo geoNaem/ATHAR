@@ -1,5 +1,5 @@
-import { AnalysisResult } from '../types/analysis-result';
-import { MethodologyId } from '../types/methodology';
+import { AnalysisResult } from '@/types/analysis-result';
+import { MethodologyId } from '@/types/methodology';
 import { chunkText } from './chunker';
 import * as thematic from './prompts/thematic';
 import * as framework from './prompts/framework';

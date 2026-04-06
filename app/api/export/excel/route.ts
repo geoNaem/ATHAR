@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { buildExcelExport } from '../../../../src/lib/exporters/excel-exporter';
-import { AnalysisResult } from '../../../../src/types/analysis-result';
+import { buildExcelExport } from '@/lib/exporters/excel-exporter';
+import { AnalysisResult } from '@/types/analysis-result';
 
 export const runtime = 'nodejs';
 

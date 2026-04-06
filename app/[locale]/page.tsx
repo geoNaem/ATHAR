@@ -1,5 +1,6 @@
-import Navbar from '../../components/Navbar';
-import Hero from '../../components/Hero';
+import Navbar from '@/components/Navbar';
+import Hero from '@/components/Hero';
+export const dynamic = 'force-dynamic';
 import { 
   Problem, 
   Workflow, 
@@ -10,7 +11,7 @@ import {
   Field, 
   FinalCTA, 
   Footer 
-} from '../../components/SectionStack';
+} from '@/components/SectionStack';
 
 export default function LandingPage() {
   return (

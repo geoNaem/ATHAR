@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { buildWordExport } from '../../../../src/lib/exporters/word-exporter';
-import { AnalysisResult } from '../../../../src/types/analysis-result';
-import { DonorPresetId } from '../../../../src/lib/exporters/donor-presets';
+import { buildWordExport } from '@/lib/exporters/word-exporter';
+import { AnalysisResult } from '@/types/analysis-result';
+import { DonorPresetId } from '@/lib/exporters/donor-presets';
 
 export const runtime = 'nodejs';
 

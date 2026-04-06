@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { runAnalysis } from '../../../lib/analysis-pipeline';
-import { ZeroRetentionGuard } from '../../../lib/zero-retention';
+import { runAnalysis } from '@/lib/analysis-pipeline';
+import { ZeroRetentionGuard } from '@/lib/zero-retention';
 
 export const runtime = 'edge';
 

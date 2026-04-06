@@ -1,4 +1,4 @@
-import { MethodologyId } from '../types/methodology';
+import { MethodologyId } from '@/types/methodology';
 
 /**
  * Maps a front-end MethodologyId to its corresponding system prompt key.

@@ -1,9 +1,9 @@
 import React from 'react';
 import { NextRequest, NextResponse } from 'next/server';
 import { renderToBuffer } from '@react-pdf/renderer';
-import InfographicPDF from '../../../../src/lib/exporters/infographic-pdf';
-import { prepareInfographicData } from '../../../../src/lib/exporters/infographic-builder';
-import { AnalysisResult } from '../../../../src/types/analysis-result';
+import InfographicPDF from '@/lib/exporters/infographic-pdf';
+import { prepareInfographicData } from '@/lib/exporters/infographic-builder';
+import { AnalysisResult } from '@/types/analysis-result';
 
 export const runtime = 'nodejs';
 
