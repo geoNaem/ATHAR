@@ -44,7 +44,7 @@ export default function Navbar() {
       </div>
 
       {/* Nav Links */}
-      <div className="hidden md:flex" style={{ gap: '24px', alignItems: 'center' }}>
+      <div className="hidden md:flex" style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
         {['how_it_works', 'methodology', 'about', 'contact'].map((item) => (
           <Link 
             key={item} 

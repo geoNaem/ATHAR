@@ -23,11 +23,11 @@ const Section = ({
   children: React.ReactNode 
 }) => (
   <section id={id} className={`section-padding ${dark ? 'bg-dark' : 'bg-bone'} ${className}`}>
-    <div className="container">
-      <div className="reveal active" style={{ marginBottom: '64px', maxWidth: '800px' }}>
-        <span className="label text-sienna" style={{ display: 'block', marginBottom: '16px' }}>{label}</span>
-        <h2 className={`font-serif ${dark ? 'text-bone' : 'text-near-black'}`} style={{ marginBottom: '24px' }}>{title}</h2>
-        {sub && <p className={dark ? 'text-accent' : 'text-near-black'} style={{ fontSize: '18px', maxWidth: '640px' }}>{sub}</p>}
+    <div className="container" style={{ paddingTop: '80px', paddingBottom: '80px' }}>
+      <div className="reveal active" style={{ marginBottom: '80px', maxWidth: '800px' }}>
+        <span className="label text-sienna" style={{ display: 'block', marginBottom: '20px', letterSpacing: '0.1em' }}>{label}</span>
+        <h2 className={`font-serif ${dark ? 'text-bone' : 'text-pure-black'}`} style={{ marginBottom: '32px', fontSize: '3.5rem', lineHeight: 1.1 }}>{title}</h2>
+        {sub && <p className={dark ? 'text-accent' : 'text-near-black'} style={{ fontSize: '20px', lineHeight: 1.6, maxWidth: '680px' }}>{sub}</p>}
       </div>
       {children}
     </div>
@@ -94,16 +94,17 @@ export const Methodology = () => {
             key={num} 
             className="reveal active" 
             style={{ 
-              background: '#3D1A08', 
-              border: '1px solid var(--accent)', 
-              borderRadius: '6px', 
-              padding: '24px',
-              gridColumn: num === 5 ? 'span 1' : 'auto'
+              background: '#F5EDD9', 
+              border: '1px solid rgba(200, 75, 49, 0.15)', 
+              borderRadius: '8px', 
+              padding: '32px',
+              gridColumn: num === 5 ? 'span 1' : 'auto',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.05)'
             }}
           >
-            <div className="mono text-sienna" style={{ fontSize: '10px', marginBottom: '8px' }}>{t(`cards.${num}.label`)}</div>
-            <h3 className="font-serif text-bone" style={{ fontSize: '1.2rem', marginBottom: '12px' }}>{t(`cards.${num}.title`)}</h3>
-            <p className="text-accent" style={{ fontSize: '14px', lineHeight: 1.6 }}>{t(`cards.${num}.body`)}</p>
+            <div className="mono text-sienna" style={{ fontSize: '10px', marginBottom: '12px', fontWeight: 600, letterSpacing: '0.05em' }}>{t(`cards.${num}.label`)}</div>
+            <h3 className="font-serif text-near-black" style={{ fontSize: '1.4rem', marginBottom: '16px' }}>{t(`cards.${num}.title`)}</h3>
+            <p className="text-near-black" style={{ fontSize: '15px', lineHeight: 1.7, opacity: 0.85 }}>{t(`cards.${num}.body`)}</p>
             {num === 5 && (
               <div 
                 className="label" 
